@@ -1,8 +1,8 @@
-FROM nginx:latest
+FROM ubuntu:latest
 
-WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install vim -y
+# Comando fixo que sempre será executado, independente dos valores passados no docker run
+ENTRYPOINT [ "echo", "Hello" ]
 
-COPY html /usr/share/nginx/html
+# Comando que pode ser substituído pelo valor passado no docker run
+CMD ["World"]
