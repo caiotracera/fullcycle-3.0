@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: app
+    container_name: node_challenge_app
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s node index.js
+    networks:
+      - node-network
+    volumes:
+      - ./app:/usr/src/app
+    tty: true
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+      
+
+  db:
+    platform: linux/x86_64
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: node_challenge_mysql
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=challenge
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_USER=docker
+    networks:
+      - node-network
+    ports:
+      - 3306:3306
+
+  webserver:
+    image: nginx:alpine
+    container_name: node_challenge_webserver
+    restart: always
+    tty: true
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./app:/usr/src/app
+    ports:
+      - 80:80
+    networks:
+      - node-network
+    depends_on:
+      - app
+
+networks:
+  node-network:
+    driver: bridge
