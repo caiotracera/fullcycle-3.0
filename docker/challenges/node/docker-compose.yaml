@@ -45,7 +45,7 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./app:/usr/src/app
     ports:
-      - 80:80
+      - 8080:8080
     networks:
       - node-network
     depends_on:
